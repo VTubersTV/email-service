@@ -34,7 +34,8 @@ export const sendEmail = async (req: Request, res: Response, next: NextFunction)
         const validatedData = emailSchema.parse(req.body);
         
         const info = await transporter.sendMail({
-            ...validatedData
+            ...validatedData,
+            from: `"${validatedData.from}" <${process.env.SMTP_USER}>`
         });
 
         logger.info('Email sent successfully', { messageId: info.messageId });

@@ -16,16 +16,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import express, { Application } from "express";
 import dotenv from "dotenv";
+dotenv.config();
+
+import express, { Application } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import { errorHandler } from "./middleware/errorHandler";
 import { sendEmail } from "./services/emailService";
 import { logger } from "./config/logger";
 import { envSchema } from "./config/email";
-
-dotenv.config();
 
 const app: Application = express();
 const port = process.env.PORT || 3000;

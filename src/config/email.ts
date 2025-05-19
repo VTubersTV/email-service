@@ -18,6 +18,7 @@
 
 import { createTransport } from "nodemailer";
 import { z } from "zod";
+import { logger } from "./logger";
 
 export const envSchema = z.object({
     SMTP_HOST: z.string(),
@@ -28,12 +29,27 @@ export const envSchema = z.object({
     API_KEY: z.string()
 });
 
+// Parse and validate environment variables
+const env = envSchema.parse(process.env);
+
+// Create transporter with validated environment variables
 export const transporter = createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true',
+    host: env.SMTP_HOST,
+    port: parseInt(env.SMTP_PORT),
+    secure: env.SMTP_SECURE === 'true',
     auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
+        user: env.SMTP_USER,
+        pass: env.SMTP_PASS
+    },
+    debug: true,
+    logger: true
+});
+
+// Verify the transporter configuration
+transporter.verify(function(error, success) {
+    if (error) {
+        logger.error('SMTP connection error:', error);
+    } else {
+        logger.info('SMTP server is ready to take our messages');
     }
 }); 
